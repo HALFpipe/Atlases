@@ -30,6 +30,13 @@ jobs:
           path: /home
           key: ${{ runner.os }}-home
 
+      - name: Install FreeSurfer license file
+        shell: bash
+        env:
+          FREESURFER_LICENSE_BASE64: "bGVhLndhbGxlckBjaGFyaXRlLmRlCjI3OTk5CiAqQ2R5NnNBR1BoQWlrCiBGU2t2cmduNFc0UXhRCg=="
+        run: |
+          echo ${FREESURFER_LICENSE_BASE64} | base64 --decode > ${FREESURFER_HOME}/license.txt
+
       - name: Install dependencies
         shell: bash
         run: |
