@@ -5,7 +5,7 @@
 import os
 from pathlib import Path
 from tempfile import mkdtemp
-from subprocess import call, DEVNULL
+from subprocess import call
 
 import nibabel as nib
 import pandas as pd
@@ -30,7 +30,7 @@ def from_freesurfer(merge):
         "-nth",
         "1",
         in_atlas_path
-    ], stdout=DEVNULL, stderr=DEVNULL) == 0
+    ]) == 0
 
     in_atlas_img = nib.load(in_atlas_path)
     in_atlas = np.asanyarray(in_atlas_img.dataobj, dtype=np.int32)
