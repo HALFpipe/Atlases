@@ -47,13 +47,15 @@ hr.ONLINE_RESOURCES.update(EXTRA_RESOURCES)
 def from_power2011(merge):
     temp = Path(mkdtemp())
 
-    atlas_table_file = str(hr.get(power2011_table))
+    # read coordinates
 
+    atlas_table_file = str(hr.get(power2011_table))
     atlas_df = pd.read_excel(
         atlas_table_file,
         skiprows=1,
         index_col=0
     )
+    coordinates_mni = atlas_df[["X", "Y", "Z"]].to_numpy()
 
     r0 = 10 / 2  # mm
     r1 = 20 / 2  # mm
@@ -61,26 +63,21 @@ def from_power2011(merge):
     template = "MNI152NLin6Asym"
 
     fixed_path = api.get(
-        template, resolution=1, suffix="T1w", desc="brain"
+        template, resolution=1, suffix="mask", desc="brain"
     )
     fixed_img = nib.load(fixed_path)
+    fixed_mask = fixed_img.get_fdata() > 0
 
-    coordinates_mni = atlas_df[["X", "Y", "Z"]].to_numpy()
-
+    meshgrid_fixed = tuple(map(
+        np.atleast_2d,
+        map(np.ravel, np.where(fixed_mask)),
+    ))
     coordinates_fixed = (
         fixed_img.affine  # transform voxel coordinates to mni
         @ np.concatenate(  # each row is one axis
             [
-                *map(
-                    np.atleast_2d,
-                    map(
-                        np.ravel,
-                        np.meshgrid(
-                            *map(np.arange, fixed_img.shape), indexing="ij"
-                        ),
-                    ),
-                ),
-                np.ones([1, np.prod(fixed_img.shape)]),
+                *meshgrid_fixed,
+                np.ones([1, meshgrid_fixed[0].shape[-1]]),
             ],
             axis=0,
         )
@@ -93,10 +90,11 @@ def from_power2011(merge):
     ties = np.sum(distance < r1, axis=0) > 1
     spheres[:, ties] = 0
 
-    atlas = np.max(
+    atlas_masked = np.max(
         spheres * np.arange(1, spheres.shape[0] + 1)[:, np.newaxis], axis=0
     )
-    atlas = atlas.astype(np.uint16).reshape(fixed_img.shape)
+    atlas = np.zeros(fixed_img.shape, dtype=np.uint16)
+    atlas[meshgrid_fixed] = atlas_masked
 
     atlas_img = new_img_like(fixed_img, atlas)
 
