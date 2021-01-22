@@ -20,7 +20,7 @@ def from_freesurfer(merge):
     freesurfer_home = Path(os.environ["FREESURFER_HOME"])
 
     rb_date = "2016-05-10"
-    rb_gca = freesurfer_home / "average" / f"RB_all_{rb_date}.gca"
+    rb_gca = freesurfer_home / "average" / f"RB_all_{rb_date}.vc700.gca"
 
     in_atlas_path = tmp / "labels.nii"
 
