@@ -19,7 +19,7 @@ tmp = Path(mkdtemp())
 def from_freesurfer(merge):
     freesurfer_home = Path(os.environ["FREESURFER_HOME"])
 
-    rb_date = "2020-01-02"
+    rb_date = "2016-05-10"
     rb_gca = freesurfer_home / "average" / f"RB_all_{rb_date}.gca"
 
     in_atlas_path = tmp / "labels.nii"
@@ -56,7 +56,7 @@ def from_freesurfer(merge):
         if "cerebellum" in x:
             return False
         if "csf" in x or "ventricle" in x or "lat-vent" in x:
-            return False
+            return Falseopen
         if "plexus" in x or "vessel" in x:
             return False
         return True
