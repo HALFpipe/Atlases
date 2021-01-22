@@ -76,7 +76,8 @@ class AtlasMerge:
             dtype=np.uint16
         )
 
-        out_atlas_img = new_img_like(self.fixed_img, atlas)
+        out_atlas_img = new_img_like(self.fixed_img, atlas, copy_header=True)
+        out_atlas_img.header["descrip"] = f"Generated for HALFpipe"
         nib.save(out_atlas_img, f"{out_prefix}.nii.gz")
 
         self.labels.to_csv(f"{out_prefix}.txt", sep="\t", header=False)
