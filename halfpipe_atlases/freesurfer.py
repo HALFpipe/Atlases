@@ -56,7 +56,7 @@ def from_freesurfer(merge):
         if "cerebellum" in x:
             return False
         if "csf" in x or "ventricle" in x or "lat-vent" in x:
-            return Falseopen
+            return False
         if "plexus" in x or "vessel" in x:
             return False
         return True
