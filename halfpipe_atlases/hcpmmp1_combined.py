@@ -22,6 +22,4 @@ def build():
 
     from_buckner2011(merge)
 
-    merge.lateralise()
-
     merge.write(f"tpl-{merge.template}_atlas-HCPMM1Combined_dseg")
