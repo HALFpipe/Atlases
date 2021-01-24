@@ -43,12 +43,15 @@ jobs:
 
       - name: Build atlases
         id: build_atlases
+        shell: bash
         run: |
           set -x
           ATLAS_DIR=/tmp/atlases
+          CWD=$(pwd)
           mkdir -p ${ATLAS_DIR}
           cd ${ATLAS_DIR}
           halfpipe-atlases-build
+          cd ${CWD}
           echo "::set-output name=atlas_dir::${ATLAS_DIR}"
 
       - name: Create release
@@ -63,4 +66,5 @@ jobs:
           for ASSET in ${ATLAS_DIR}/*; do
             ASSETS+=("-a" "${ASSET}")
           done
-          hub release create "${ASSETS[@]}" -m "Release ${GITHUB_REF}" "${GITHUB_REF}"
+          VERSION=$(echo "${GITHUB_REF}" | cut -d '/' -f 3)
+          hub release create "${ASSETS[@]}" -m "Release ${VERSION}" "${VERSION}"
