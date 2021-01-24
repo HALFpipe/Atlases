@@ -16,8 +16,12 @@ def build():
 
     from_hcpmmp1(merge)
 
+    merge.lateralise()
+
     from_freesurfer(merge)
 
     from_buckner2011(merge)
+
+    merge.lateralise()
 
     merge.write(f"tpl-{merge.template}_atlas-HCPMM1Combined_dseg")

@@ -9,6 +9,7 @@ import nibabel as nib
 import numpy as np
 import pandas as pd
 
+from scipy import ndimage
 from scipy.ndimage.measurements import center_of_mass
 from scipy.spatial.distance import cdist
 
@@ -16,6 +17,7 @@ from nilearn.image import new_img_like
 
 from templateflow import api
 
+from halfpipe.io.metadata import canonicalize_direction_code
 from halfpipe.io.metadata.niftimetadata import NiftiheaderMetadataLoader
 from halfpipe.interface import Resample
 from halfpipe.model import File
@@ -31,13 +33,12 @@ class AtlasMerge:
         self.template = template
         self.resolution = resolution
 
-        fixed_path = api.get(
+        self.fixed_img_path = api.get(
             template, resolution=resolution, suffix="T1w", desc="brain"
         )
-        self.fixed_img = nib.load(fixed_path)
+        self.fixed_img = nib.load(self.fixed_img_path)
 
         self.masks = pd.Series([], dtype=object)
-
         self.labels = pd.Series([], dtype=object)
 
     def write(self, out_prefix):
@@ -83,6 +84,63 @@ class AtlasMerge:
         nib.save(out_atlas_img, f"{out_prefix}.nii.gz")
 
         self.labels.to_csv(f"{out_prefix}.txt", sep="\t", header=False)
+
+    def lateralise(self):
+        lat_masks = pd.Series([], dtype=object)
+        lat_labels = pd.Series([], dtype=object)
+
+        left_to_right_code = canonicalize_direction_code("lr", self.fixed_img_path)
+        assert left_to_right_code == "i", "fixed_img needs to be in RAS orientation"
+
+        ac_point = np.linalg.inv(self.fixed_img.affine) @ np.array([0, 0, 0, 1])
+        center = int(ac_point[0])
+
+        def accumulate(mask, label):
+            new_value = np.max(lat_masks.index) + 1
+            if np.isnan(new_value):  # first iteration
+                new_value = 1
+
+            lat_labels.loc[new_value] = label
+            lat_masks.loc[new_value] = mask
+
+        for value in self.masks.index:
+            mask = self.masks.loc[value]
+            label = self.labels.loc[value]
+
+            components, n_components = ndimage.label(mask, structure=np.ones((3, 3, 3)))
+
+            if n_components == 1:
+                accumulate(mask, label)
+                continue
+
+            left_components = components[:center, :, :]
+            right_components = components[center:, :, :]
+
+            left_component_indices = set(np.unique(left_components))
+            left_component_indices.discard(0)
+
+            right_component_indices = set(np.unique(right_components))
+            right_component_indices.discard(0)
+
+            if (
+                    len(left_component_indices) == 0
+                    or len(right_component_indices) == 0
+                    or not left_component_indices.isdisjoint(right_component_indices)
+            ):
+                accumulate(mask, label)
+                continue
+
+            accumulate(
+                np.isin(components, list(left_component_indices)),
+                f"{label}_L"
+            )
+            accumulate(
+                np.isin(components, list(right_component_indices)),
+                f"{label}_R"
+            )
+
+        self.masks = lat_masks
+        self.labels = lat_labels
 
     def accumulate(self, in_prefix, in_labels, in_atlas):
         in_atlas = in_atlas.reshape(self.fixed_img.shape)
