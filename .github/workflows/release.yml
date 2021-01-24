@@ -51,6 +51,7 @@ jobs:
           echo "::set-output name=atlas_dir::${ATLAS_DIR}"
 
       - name: Create release
+        shell: bash
         env:
           ATLAS_DIR: ${{ steps.build_atlases.outputs.atlas_dir }}
           GITHUB_REF: ${{ github.ref }}
@@ -61,4 +62,4 @@ jobs:
           for ASSET in ${ATLAS_DIR}/*; do
             ASSETS+=("-a" "${ASSET}")
           done
-          hub release create "${ASSETS[*]}" -m "Release ${GITHUB_REF}" "${GITHUB_REF}"
+          hub release create "${ASSETS[@]}" -m "Release ${GITHUB_REF}" "${GITHUB_REF}"
