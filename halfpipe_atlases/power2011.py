@@ -38,10 +38,10 @@ power2011_table_url = (
     + power2011_table
 )
 
-EXTRA_RESOURCES = dict()
-EXTRA_RESOURCES[power2011_table] = power2011_table_url
+extra_resources = dict()
+extra_resources[power2011_table] = power2011_table_url
 
-hr.ONLINE_RESOURCES.update(EXTRA_RESOURCES)
+hr.online_resources.update(extra_resources)
 
 
 def from_power2011(merge):

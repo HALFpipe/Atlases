@@ -14,11 +14,11 @@ hcpmmp1_atlas_url = (
 hcpmmp1_labels = "HCP-MMP1_on_MNI152_ICBM2009a_nlin.txt"
 hcpmmp1_labels_url = "https://api.figshare.com/v2/file/download/5534027"
 
-EXTRA_RESOURCES = dict()
-EXTRA_RESOURCES[hcpmmp1_atlas] = hcpmmp1_atlas_url
-EXTRA_RESOURCES[hcpmmp1_labels] = hcpmmp1_labels_url
+extra_resources = dict()
+extra_resources[hcpmmp1_atlas] = hcpmmp1_atlas_url
+extra_resources[hcpmmp1_labels] = hcpmmp1_labels_url
 
-hr.ONLINE_RESOURCES.update(EXTRA_RESOURCES)
+hr.online_resources.update(extra_resources)
 
 
 def from_hcpmmp1(merge):

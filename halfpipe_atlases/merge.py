@@ -17,11 +17,10 @@ from nilearn.image import new_img_like
 
 from templateflow import api
 
-from halfpipe.io.metadata import canonicalize_direction_code
-from halfpipe.io.metadata.niftimetadata import NiftiheaderMetadataLoader
-from halfpipe.interface import Resample
-from halfpipe.model import File
-from halfpipe.utils import first
+from halfpipe.ingest.metadata.direction import canonicalize_direction_code
+from halfpipe.ingest.metadata.niftimetadata import NiftiheaderMetadataLoader
+from halfpipe.interfaces.imagemaths.resample import Resample
+from halfpipe.model.file.base import File
 
 from . import __version__
 
@@ -167,12 +166,12 @@ class AtlasMerge:
         in_atlas_img = nib.load(in_atlas_path)
         in_atlas = np.asanyarray(in_atlas_img.dataobj, dtype=np.uint16)
 
-        in_labels_path = str(first(
+        in_labels_path = str(next(iter(
             filter(
                 lambda f: f.suffix == ".tsv",
                 api.get(self.template, **kwargs)
             )
-        ))
+        )))
         in_labels_df = pd.read_table(in_labels_path, sep=r"\s+", index_col=0)
 
         assert isinstance(in_labels_df, pd.DataFrame)

@@ -21,10 +21,10 @@ brainnetome_zip_url = (
     "downloadUrl"
 )
 
-EXTRA_RESOURCES = dict()
-EXTRA_RESOURCES[brainnetome_zip] = brainnetome_zip_url
+extra_resources = dict()
+extra_resources[brainnetome_zip] = brainnetome_zip_url
 
-hr.ONLINE_RESOURCES.update(EXTRA_RESOURCES)
+hr.online_resources.update(extra_resources)
 
 
 def from_brainnetome(merge):

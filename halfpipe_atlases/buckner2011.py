@@ -25,7 +25,7 @@ EXTRA_RESOURCES[buckner2011_17networks_atlas] = (
 EXTRA_RESOURCES[buckner2011_17networks_labels] = (
     f"{buckner2011_base_url}/{buckner2011_17networks_labels}"
 )
-hr.ONLINE_RESOURCES.update(EXTRA_RESOURCES)
+hr.online_resources.update(EXTRA_RESOURCES)
 
 
 def from_buckner2011(merge):
