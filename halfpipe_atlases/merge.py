@@ -17,7 +17,7 @@ from nilearn.image import new_img_like
 from scipy import ndimage
 from scipy.ndimage.measurements import center_of_mass
 from scipy.spatial.distance import cdist
-from templateflow import api
+from templateflow.api import get as get_template
 
 from . import __version__
 
@@ -29,7 +29,7 @@ class AtlasMerge:
         self.template = template
         self.resolution = resolution
 
-        self.fixed_img_path = api.get(
+        self.fixed_img_path = get_template(
             template, resolution=resolution, suffix="T1w", desc="brain"
         )
         self.fixed_img = nib.load(self.fixed_img_path)
@@ -154,7 +154,9 @@ class AtlasMerge:
             self.masks.loc[new_value] = mask
 
     def from_templateflow(self, in_prefix, **kwargs):
-        in_atlas_path = api.get(self.template, resolution=self.resolution, **kwargs)
+        in_atlas_path = get_template(
+            self.template, resolution=self.resolution, **kwargs
+        )
         in_atlas_img = nib.load(in_atlas_path)
         in_atlas = np.asanyarray(in_atlas_img.dataobj, dtype=np.uint16)
 
@@ -162,7 +164,8 @@ class AtlasMerge:
             next(
                 iter(
                     filter(
-                        lambda f: f.suffix == ".tsv", api.get(self.template, **kwargs)
+                        lambda f: f.suffix == ".tsv",
+                        get_template(self.template, **kwargs),
                     )
                 )
             )
