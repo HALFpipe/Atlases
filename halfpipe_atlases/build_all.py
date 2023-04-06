@@ -4,6 +4,14 @@
 
 
 def build():
+    import logging
+
+    logging.basicConfig(level=logging.DEBUG)
+
+    from nipype import config
+
+    config.enable_debug_mode()
+
     from .brainnetome import build as brainnetome_build
     from .brainnetome_combined import build as brainnetome_combined_build
     from .buckner2011 import build as buckner2011_build
@@ -32,4 +40,5 @@ def build():
 
 if __name__ == "__main__":
     from halfpipe_atlases.build_all import build as build_ext
+
     build_ext()
