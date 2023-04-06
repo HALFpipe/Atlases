@@ -49,6 +49,6 @@ def build():
 
     from_hcpmmp1(merge, prefix=None)
 
-    merge.lateralise()
+    merge.lateralize()
 
     merge.write(f"tpl-{merge.template}_atlas-HCPMM1_dseg")

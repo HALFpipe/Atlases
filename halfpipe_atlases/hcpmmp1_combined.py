@@ -16,7 +16,7 @@ def build():
 
     from_hcpmmp1(merge)
 
-    merge.lateralise()
+    merge.lateralize()
 
     from_freesurfer(merge)
 
