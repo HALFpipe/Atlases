@@ -28,7 +28,7 @@ EXTRA_RESOURCES[buckner2011_17networks_labels] = (
 hr.online_resources.update(EXTRA_RESOURCES)
 
 
-def from_buckner2011(merge):
+def from_buckner2011(merge, prefix: str | None = "Buckner2011"):
     in_labels_file = str(hr.get(buckner2011_17networks_labels))
 
     in_labels_df = pd.read_table(
@@ -42,7 +42,7 @@ def from_buckner2011(merge):
     in_labels = in_labels_df["name"]
 
     merge.from_file(
-        "Buckner2011",
+        prefix,
         hr.get(buckner2011_17networks_atlas),
         in_labels,
         space="MNI152NLin6Asym"
@@ -54,6 +54,6 @@ def build():
 
     merge = AtlasMerge()
 
-    from_buckner2011(merge)
+    from_buckner2011(merge, prefix=None)
 
     merge.write(f"tpl-{merge.template}_atlas-Buckner2011_dseg")

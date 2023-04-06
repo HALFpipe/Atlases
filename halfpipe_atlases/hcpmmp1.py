@@ -21,7 +21,7 @@ extra_resources[hcpmmp1_labels] = hcpmmp1_labels_url
 hr.online_resources.update(extra_resources)
 
 
-def from_hcpmmp1(merge):
+def from_hcpmmp1(merge, prefix: str | None = "HCPMMP1"):
     in_labels_file = str(hr.get(hcpmmp1_labels))
 
     in_labels_df = pd.read_table(
@@ -35,7 +35,7 @@ def from_hcpmmp1(merge):
     in_labels = in_labels_df["name"]
 
     merge.from_file(
-        "HCPMMP1",
+        prefix,
         hr.get(hcpmmp1_atlas),
         in_labels,
         space="MNI152NLin2009cAsym",  # actually it's a not c
@@ -47,7 +47,7 @@ def build():
 
     merge = AtlasMerge()
 
-    from_hcpmmp1(merge)
+    from_hcpmmp1(merge, prefix=None)
 
     merge.lateralise()
 

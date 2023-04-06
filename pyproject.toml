@@ -1,0 +1,40 @@
+[project]
+name = "halfpipe-atlases"
+dynamic = ["version"]
+requires-python = ">=3.11"
+
+description = "Atlases for use with ENIGMA HALFpipe"
+
+authors = [
+    {name = "Lea Waller", email = "lea@fmri.science"},
+]
+
+dependencies = [
+    "numpy",
+    "pandas >= 1.2.0",
+    "nibabel >= 3.2.1",
+    "nipype >= 1.6.0",
+    "templateflow >= 0.7.1",
+    "xlrd >= 1.0.0",
+    "halfpipe",
+]
+
+[project.scripts]
+halfpipe-atlases-build = "halfpipe_atlases.build_all:build"
+
+[build-system]
+requires = [
+  "setuptools>=62",
+  "setuptools_scm[toml]>=6.2",
+  "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.setuptools_scm]
+version_scheme = "no-guess-dev"

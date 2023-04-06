@@ -27,7 +27,7 @@ extra_resources[brainnetome_zip] = brainnetome_zip_url
 hr.online_resources.update(extra_resources)
 
 
-def from_brainnetome(merge):
+def from_brainnetome(merge, prefix: str | None = "Brainnetome"):
     temp = Path(mkdtemp())
 
     brainnetome_zip_file = str(hr.get(brainnetome_zip))
@@ -45,7 +45,7 @@ def from_brainnetome(merge):
         in_atlas_path = zip_fp.extract(in_atlas_zip_path, path=temp)
 
     merge.from_file(
-        "Brainnetome",
+        prefix,
         in_atlas_path,
         in_labels_df["name"],
         space="MNI152NLin6Asym"
@@ -59,6 +59,6 @@ def build():
 
     merge = AtlasMerge()
 
-    from_brainnetome(merge)
+    from_brainnetome(merge, prefix=None)
 
     merge.write(f"tpl-{merge.template}_atlas-Brainnetome_dseg")

@@ -44,7 +44,7 @@ extra_resources[power2011_table] = power2011_table_url
 hr.online_resources.update(extra_resources)
 
 
-def from_power2011(merge):
+def from_power2011(merge, prefix: str | None = "Power2011"):
     temp = Path(mkdtemp())
 
     # read coordinates
@@ -106,7 +106,7 @@ def from_power2011(merge):
         labels.loc[i] = f"{i:03d}"
 
     merge.from_file(
-        "Power2011",
+        prefix,
         atlas_path,
         labels,
         space="MNI152NLin6Asym"
@@ -120,6 +120,6 @@ def build():
 
     merge = AtlasMerge()
 
-    from_power2011(merge)
+    from_power2011(merge, prefix=None)
 
     merge.write(f"tpl-{merge.template}_atlas-Power2011_dseg")
