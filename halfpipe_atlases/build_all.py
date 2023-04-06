@@ -6,7 +6,13 @@
 def build():
     import logging
 
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format=(
+            "%(asctime)s [%(levelname)8s] %(funcName)s: "
+            "%(message)s (%(filename)s:%(lineno)s)"
+        ),
+    )
 
     from nipype import config
 
