@@ -89,4 +89,4 @@ def build():
 
     from_freesurfer(merge)
 
-    merge.write(f"tpl-{merge.template}_atlas-FreeSurfer_dseg")
+    merge.write("atlas-FreeSurfer_dseg")

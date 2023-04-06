@@ -51,4 +51,4 @@ def build():
 
     merge.lateralize()
 
-    merge.write(f"tpl-{merge.template}_atlas-HCPMM1_dseg")
+    merge.write("atlas-HCPMM1_dseg")

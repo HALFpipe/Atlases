@@ -56,4 +56,4 @@ def build():
 
     from_buckner2011(merge, prefix=None)
 
-    merge.write(f"tpl-{merge.template}_atlas-Buckner2011_dseg")
+    merge.write("atlas-Buckner2011_dseg")

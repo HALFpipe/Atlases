@@ -61,4 +61,4 @@ def build():
 
     from_brainnetome(merge, prefix=None)
 
-    merge.write(f"tpl-{merge.template}_atlas-Brainnetome_dseg")
+    merge.write("atlas-Brainnetome_dseg")

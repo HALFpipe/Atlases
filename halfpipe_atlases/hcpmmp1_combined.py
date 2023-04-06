@@ -22,4 +22,4 @@ def build():
 
     from_buckner2011(merge)
 
-    merge.write(f"tpl-{merge.template}_atlas-HCPMM1Combined_dseg")
+    merge.write("atlas-HCPMM1Combined_dseg")

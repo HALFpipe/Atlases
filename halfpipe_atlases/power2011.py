@@ -122,4 +122,4 @@ def build():
 
     from_power2011(merge, prefix=None)
 
-    merge.write(f"tpl-{merge.template}_atlas-Power2011_dseg")
+    merge.write("atlas-Power2011_dseg")

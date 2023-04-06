@@ -16,4 +16,4 @@ def build():
 
     from_buckner2011(merge)
 
-    merge.write(f"tpl-{merge.template}_atlas-BrainnetomeCombined_dseg")
+    merge.write("atlas-BrainnetomeCombined_dseg")
