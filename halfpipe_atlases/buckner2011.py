@@ -18,14 +18,14 @@ buckner2011_17networks_atlas = (
 buckner2011_17networks_labels = "Buckner2011_17Networks_ColorLUT.txt"
 
 
-EXTRA_RESOURCES = dict()
-EXTRA_RESOURCES[buckner2011_17networks_atlas] = (
+extra_resources = dict()
+extra_resources[buckner2011_17networks_atlas] = (
     f"{buckner2011_base_url}/{buckner2011_17networks_atlas}"
 )
-EXTRA_RESOURCES[buckner2011_17networks_labels] = (
+extra_resources[buckner2011_17networks_labels] = (
     f"{buckner2011_base_url}/{buckner2011_17networks_labels}"
 )
-hr.online_resources.update(EXTRA_RESOURCES)
+hr.online_resources.update(extra_resources)
 
 
 def from_buckner2011(merge, prefix: str | None = "Buckner2011"):
