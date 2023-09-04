@@ -20,7 +20,7 @@ def build():
 
     merge = AtlasMerge()
 
-    for dim in [256, 1024]:
+    for dim in [64, 256, 1024]:
         query = dict(
             atlas="DiFuMo",
             desc=f"{dim}dimensions",
@@ -53,6 +53,7 @@ def build():
 
         atlas_img = nib.load(result.outputs.output_image)
         atlas = atlas_img.get_fdata()
+        atlas[atlas < 1e-6] = 0  # Threshold to avoid numerical issues.
 
         out_atlas_img = new_img_like(merge.fixed_img, atlas, copy_header=True)
         out_atlas_img.header[
