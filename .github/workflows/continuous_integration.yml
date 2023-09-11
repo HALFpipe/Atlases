@@ -14,6 +14,12 @@ jobs:
     container: ghcr.io/halfpipe/halfpipe:latest
     timeout-minutes: 30
     steps:
+      - name: Install dependencies
+        shell: bash
+        run: |
+          mamba install -y git zip
+          git --version
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -21,10 +27,6 @@ jobs:
         id: build_atlases
         shell: bash
         run: |
-          set -x
-
-          mamba install -y zip
-
           freesurfer_license_base64="bGVhLndhbGxlckBjaGFyaXRlLmRlCjI3OTk5CiAqQ2R5NnNBR1BoQWlrCiBGU2t2cmduNFc0UXhRCg=="
           echo ${freesurfer_license_base64} \
             | base64 --decode > ${FREESURFER_HOME}/license.txt
