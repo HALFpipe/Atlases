@@ -4,19 +4,20 @@
 
 import os
 from pathlib import Path
-from tempfile import mkdtemp
 from subprocess import call
+from tempfile import mkdtemp
 
 import nibabel as nib
-import pandas as pd
 import numpy as np
-
+import pandas as pd
 from nilearn.image import new_img_like
+
+from .merge import AtlasMerge
 
 tmp = Path(mkdtemp())
 
 
-def from_freesurfer(merge):
+def from_freesurfer(merge: AtlasMerge) -> None:
     freesurfer_home = Path(os.environ["FREESURFER_HOME"])
 
     rb_date = "2016-05-10"
@@ -24,13 +25,7 @@ def from_freesurfer(merge):
 
     in_atlas_path = tmp / "labels.nii"
 
-    assert call([
-        "mri_convert",
-        rb_gca,
-        "-nth",
-        "1",
-        in_atlas_path
-    ]) == 0
+    assert call(["mri_convert", rb_gca, "-nth", "1", in_atlas_path]) == 0
 
     in_atlas_img = nib.load(in_atlas_path)
     in_atlas = np.asanyarray(in_atlas_img.dataobj, dtype=np.int32)
@@ -40,7 +35,7 @@ def from_freesurfer(merge):
         sep=r"\s+",
         comment="#",
         index_col=0,
-        names=["name", "r", "g", "b", "a"]
+        names=["name", "r", "g", "b", "a"],
     )
 
     assert isinstance(in_labels_df, pd.DataFrame)
@@ -82,9 +77,7 @@ def from_freesurfer(merge):
     )
 
 
-def build():
-    from .merge import AtlasMerge
-
+def build() -> None:
     merge = AtlasMerge()
 
     from_freesurfer(merge)

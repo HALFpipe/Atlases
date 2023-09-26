@@ -7,6 +7,7 @@ from halfpipe import resource as hr
 
 from .buckner2011 import from_buckner2011
 from .freesurfer import from_freesurfer
+from .merge import AtlasMerge
 
 name_changes_csv = "component_name_changes.csv"
 name_changes_csv_url = (
@@ -21,9 +22,7 @@ extra_resources[name_changes_csv] = name_changes_csv_url
 hr.online_resources.update(extra_resources)
 
 
-def build():
-    from .merge import AtlasMerge
-
+def build() -> None:
     merge = AtlasMerge()
 
     atlas_name = "Schaefer2018"

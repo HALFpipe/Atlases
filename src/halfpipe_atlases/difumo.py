@@ -7,17 +7,16 @@ from pathlib import Path
 from shutil import copyfile
 
 import nibabel as nib
+import numpy as np
 from halfpipe.interfaces.image_maths.resample import Resample
 from nilearn.image import new_img_like
-import numpy as np
 from templateflow.api import get as get_template
 
 from . import __version__
+from .merge import AtlasMerge
 
 
-def build():
-    from .merge import AtlasMerge
-
+def build() -> None:
     merge = AtlasMerge()
 
     for dim in [64, 256, 1024]:

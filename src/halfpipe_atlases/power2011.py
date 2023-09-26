@@ -3,20 +3,18 @@
 # vi: set ft=python sts=4 ts=4 sw=4 et:
 
 from pathlib import Path
+from shutil import rmtree
+from tempfile import mkdtemp
 
 import nibabel as nib
 import numpy as np
 import pandas as pd
-
-from tempfile import mkdtemp
-from shutil import rmtree
-
-from scipy.spatial.distance import cdist
+from halfpipe import resource as hr
 from nilearn.image import new_img_like
-
+from scipy.spatial.distance import cdist
 from templateflow import api
 
-from halfpipe import resource as hr
+from .merge import AtlasMerge
 
 """
 
@@ -34,8 +32,7 @@ capabilities, an element of brain organization."
 
 power2011_table = "NIHMS326477-supplement-02.xls"
 power2011_table_url = (
-    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3222858/bin/"
-    + power2011_table
+    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3222858/bin/" + power2011_table
 )
 
 extra_resources = dict()
@@ -44,17 +41,13 @@ extra_resources[power2011_table] = power2011_table_url
 hr.online_resources.update(extra_resources)
 
 
-def from_power2011(merge, prefix: str | None = "Power2011"):
+def from_power2011(merge: AtlasMerge, prefix: str | None = "Power2011") -> None:
     temp = Path(mkdtemp())
 
     # read coordinates
 
     atlas_table_file = str(hr.get(power2011_table))
-    atlas_df = pd.read_excel(
-        atlas_table_file,
-        skiprows=1,
-        index_col=0
-    )
+    atlas_df = pd.read_excel(atlas_table_file, skiprows=1, index_col=0)
     coordinates_mni = atlas_df[["X", "Y", "Z"]].to_numpy()
 
     r0 = 10 / 2  # mm
@@ -62,16 +55,16 @@ def from_power2011(merge, prefix: str | None = "Power2011"):
 
     template = "MNI152NLin6Asym"
 
-    fixed_path = api.get(
-        template, resolution=1, suffix="mask", desc="brain"
-    )
+    fixed_path = api.get(template, resolution=1, suffix="mask", desc="brain")
     fixed_img = nib.load(fixed_path)
     fixed_mask = fixed_img.get_fdata() > 0
 
-    meshgrid_fixed = tuple(map(
-        np.atleast_2d,
-        map(np.ravel, np.where(fixed_mask)),
-    ))
+    meshgrid_fixed = tuple(
+        map(
+            np.atleast_2d,
+            map(np.ravel, np.where(fixed_mask)),
+        )
+    )
     coordinates_fixed = (
         fixed_img.affine  # transform voxel coordinates to mni
         @ np.concatenate(  # each row is one axis
@@ -105,19 +98,12 @@ def from_power2011(merge, prefix: str | None = "Power2011"):
     for i in atlas_df.index:
         labels.loc[i] = f"{i:03d}"
 
-    merge.from_file(
-        prefix,
-        atlas_path,
-        labels,
-        space="MNI152NLin6Asym"
-    )
+    merge.from_file(prefix, atlas_path, labels, space="MNI152NLin6Asym")
 
     rmtree(temp, ignore_errors=True)
 
 
 def build():
-    from .merge import AtlasMerge
-
     merge = AtlasMerge()
 
     from_power2011(merge, prefix=None)

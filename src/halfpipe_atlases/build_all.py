@@ -3,7 +3,7 @@
 # vi: set ft=python sts=4 ts=4 sw=4 et:
 
 
-def build():
+def build() -> None:
     import logging
 
     logging.basicConfig(
@@ -22,6 +22,7 @@ def build():
     from .brainnetome_combined import build as brainnetome_combined_build
     from .buckner2011 import build as buckner2011_build
     from .difumo import build as difumo_build
+    from .enigma_task_based import build as enigma_task_based_build
     from .freesurfer import build as freesurfer_build
     from .hcpmmp1 import build as hcpmmp1_build
     from .hcpmmp1_combined import build as hcpmmp1_combined_build
@@ -33,6 +34,7 @@ def build():
         brainnetome_build,
         brainnetome_combined_build,
         buckner2011_build,
+        enigma_task_based_build,
         freesurfer_build,
         hcpmmp1_build,
         hcpmmp1_combined_build,
