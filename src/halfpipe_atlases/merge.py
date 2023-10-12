@@ -14,6 +14,7 @@ from halfpipe.ingest.metadata.niftimetadata import NiftiheaderMetadataLoader
 from halfpipe.interfaces.image_maths.resample import Resample
 from halfpipe.model.file.base import File
 from nilearn.image import new_img_like
+from numpy import typing as npt
 from scipy import ndimage
 from scipy.ndimage.measurements import center_of_mass
 from scipy.spatial.distance import cdist
@@ -24,22 +25,26 @@ from . import __version__
 metadata_loader = NiftiheaderMetadataLoader(None)
 
 
+def mask_to_atlas(item: tuple[int, npt.NDArray[np.bool_]]) -> npt.NDArray[np.uint16]:
+    index, mask = item
+    return (index * mask).astype(np.uint16)
+
+
 class AtlasMerge:
-    def __init__(self, template="MNI152NLin2009cAsym", resolution=2):
+    def __init__(self, template: str = "MNI152NLin2009cAsym", resolution: int = 2):
         self.template = template
         self.resolution = resolution
 
-        self.fixed_img_path = get_template(
+        self.fixed_img_path: Path = get_template(
             template, resolution=resolution, suffix="T1w", desc="brain"
         )
-        self.fixed_img = nib.load(self.fixed_img_path)
+        self.fixed_img = nib.nifti1.load(self.fixed_img_path)
 
         self.masks = pd.Series([], dtype=object)
         self.labels = pd.Series([], dtype=object)
 
-    def write(self, out_prefix):
+    def merge_masks_without_overlap(self) -> npt.NDArray[np.uint16]:
         ties = np.sum(self.masks.to_list(), axis=0, dtype=np.uint16) > 1
-
         if np.any(ties):
             warn(
                 f"Atlases to be merged have {np.sum(ties):d} ties. "
@@ -70,9 +75,25 @@ class AtlasMerge:
         )  # double check ties
 
         atlas = np.sum(
-            [*map(lambda t: t[0] * t[1], self.masks.items())], axis=0, dtype=np.uint16
+            list(map(mask_to_atlas, self.masks.items())),
+            axis=0,
+            dtype=np.uint16,
         )
+        return atlas
 
+    def merge_masks_with_overlap(self) -> npt.NDArray[np.uint16]:
+        atlas = np.stack(
+            list(map(mask_to_atlas, self.masks.items())),
+            axis=-1,
+            dtype=np.uint16,
+        )
+        return atlas
+
+    def write(self, out_prefix: str, allow_overlaps: bool = False) -> None:
+        atlas = {
+            True: self.merge_masks_with_overlap,
+            False: self.merge_masks_without_overlap,
+        }[allow_overlaps]()
         out_atlas_img = new_img_like(self.fixed_img, atlas, copy_header=True)
         out_atlas_img.header[
             "descrip"
@@ -81,7 +102,7 @@ class AtlasMerge:
 
         self.labels.to_csv(f"{out_prefix}.tsv", sep="\t", header=False)
 
-    def lateralize(self):
+    def lateralize(self) -> None:
         lat_masks = pd.Series([], dtype=object)
         lat_labels = pd.Series([], dtype=object)
 
@@ -132,7 +153,12 @@ class AtlasMerge:
         self.masks = lat_masks
         self.labels = lat_labels
 
-    def accumulate(self, in_prefix: str | None, in_labels, in_atlas):
+    def accumulate(
+        self,
+        in_prefix: str | None,
+        in_labels: pd.Series,
+        in_atlas: npt.NDArray[np.uint16],
+    ) -> None:
         in_atlas = in_atlas.reshape(self.fixed_img.shape)
 
         for value, name in in_labels.items():
@@ -153,7 +179,7 @@ class AtlasMerge:
 
             self.masks.loc[new_value] = mask
 
-    def from_templateflow(self, in_prefix, **kwargs):
+    def from_templateflow(self, in_prefix: str, **kwargs: str):
         in_atlas_path = get_template(
             self.template, resolution=self.resolution, **kwargs
         )
@@ -178,7 +204,13 @@ class AtlasMerge:
 
         self.accumulate(in_prefix, in_labels, in_atlas)
 
-    def from_file(self, in_prefix: str | None, in_atlas_path, in_labels, space=None):
+    def from_file(
+        self,
+        in_prefix: str | None,
+        in_atlas_path: Path | str,
+        in_labels: pd.Series,
+        space: str | None = None,
+    ) -> None:
         in_atlas_path = Path(in_atlas_path)
 
         if space is None:
