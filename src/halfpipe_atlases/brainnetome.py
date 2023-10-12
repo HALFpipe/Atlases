@@ -10,6 +10,8 @@ from zipfile import ZipFile
 import pandas as pd
 from halfpipe import resource as hr
 
+from .merge import AtlasMerge
+
 brainnetome_zip = "BN_Atlas_for_FSL.zip"
 brainnetome_zip_url = (
     (
@@ -25,7 +27,7 @@ extra_resources[brainnetome_zip] = brainnetome_zip_url
 hr.online_resources.update(extra_resources)
 
 
-def from_brainnetome(merge, prefix: str | None = "Brainnetome") -> None:
+def from_brainnetome(merge: AtlasMerge, prefix: str | None = "Brainnetome") -> None:
     temp = Path(mkdtemp())
 
     brainnetome_zip_file = str(hr.get(brainnetome_zip))
@@ -50,8 +52,6 @@ def from_brainnetome(merge, prefix: str | None = "Brainnetome") -> None:
 
 
 def build() -> None:
-    from .merge import AtlasMerge
-
     merge = AtlasMerge()
 
     from_brainnetome(merge, prefix=None)
