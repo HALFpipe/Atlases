@@ -28,6 +28,7 @@ def build() -> None:
     from .hcpmmp1_combined import build as hcpmmp1_combined_build
     from .power2011 import build as power2011_build
     from .schaefer2018_combined import build as schaefer2018_combined_build
+    from .ukbiobank import build as ukbiobank_build
 
     build_fns = [
         difumo_build,
@@ -40,6 +41,7 @@ def build() -> None:
         hcpmmp1_combined_build,
         power2011_build,
         schaefer2018_combined_build,
+        ukbiobank_build,
     ]
 
     for build_fn in build_fns:
