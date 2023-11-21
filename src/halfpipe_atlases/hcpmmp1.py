@@ -43,9 +43,6 @@ def from_hcpmmp1(merge: AtlasMerge, prefix: str | None = "HCPMMP1") -> None:
 
 def build() -> None:
     merge = AtlasMerge()
-
     from_hcpmmp1(merge, prefix=None)
-
     merge.lateralize()
-
     merge.write("atlas-HCPMM1_dseg")

@@ -6,7 +6,7 @@ import pandas as pd
 from halfpipe import resource as hr
 
 from .buckner2011 import from_buckner2011
-from .freesurfer import from_freesurfer
+from .freesurfer_subcortical import from_freesurfer_subcortical
 from .merge import AtlasMerge
 
 name_changes_csv = "component_name_changes.csv"
@@ -39,7 +39,7 @@ def build() -> None:
     }
     merge.labels.replace(to_replace=name_mapping, inplace=True)
 
-    from_freesurfer(merge)
+    from_freesurfer_subcortical(merge)
 
     from_buckner2011(merge)
 
