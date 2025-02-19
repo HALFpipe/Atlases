@@ -16,7 +16,6 @@ jobs:
     container: fmri.science/halfpipe:latest
     steps:
       - name: Install dependencies
-        shell: sudo bash {0}
         run: |
           apt-get --yes update
           apt-get --yes install libreoffice git zip
