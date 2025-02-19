@@ -10,13 +10,14 @@ authors = [
 ]
 
 dependencies = [
-    "numpy",
-    "pandas >= 1.2.0",
+    "halfpipe",
     "nibabel >= 3.2.1",
     "nipype >= 1.6.0",
+    "numpy",
+    "pandas >= 1.2.0",
+    "python-docx",
     "templateflow >= 0.7.1",
     "xlrd >= 1.0.0",
-    "halfpipe",
 ]
 
 [project.scripts]
