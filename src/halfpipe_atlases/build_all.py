@@ -33,10 +33,10 @@ def build() -> None:
     from .ukbiobank import build as ukbiobank_build
 
     build_fns = [
-        difumo_build,
         brainnetome_build,
         brainnetome_combined_build,
         buckner2011_build,
+        difumo_build,
         enigma_task_based_build,
         freesurfer_cortical_build,
         freesurfer_subcortical_build,

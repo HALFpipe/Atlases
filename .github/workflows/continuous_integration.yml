@@ -19,6 +19,7 @@ jobs:
 
       - name: Setup container
         run: |
+          echo $GITHUB_OUTPUT
           docker run \
             --detach \
             --rm \
@@ -40,6 +41,7 @@ jobs:
         id: build_atlases
         shell: docker exec build bash -x -e {0}
         run: |
+          echo $GITHUB_OUTPUT
           cat > "${FREESURFER_HOME}/license.txt" <<EOF
           halfpipe@fmri.science
           73053
