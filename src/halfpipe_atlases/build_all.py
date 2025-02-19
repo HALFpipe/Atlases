@@ -27,6 +27,7 @@ def build() -> None:
     from .freesurfer_subcortical import build as freesurfer_subcortical_build
     from .hcpmmp1 import build as hcpmmp1_build
     from .hcpmmp1_combined import build as hcpmmp1_combined_build
+    from .neuromark import build as neuromark_build
     from .power2011 import build as power2011_build
     from .schaefer2018_combined import build as schaefer2018_combined_build
     from .ukbiobank import build as ukbiobank_build
@@ -41,6 +42,7 @@ def build() -> None:
         freesurfer_subcortical_build,
         hcpmmp1_build,
         hcpmmp1_combined_build,
+        neuromark_build,
         power2011_build,
         schaefer2018_combined_build,
         ukbiobank_build,

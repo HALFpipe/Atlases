@@ -50,9 +50,9 @@ def build() -> None:
         )
         result = interface.run()
 
-        atlas_img = nib.load(result.outputs.output_image)
+        atlas_img = nib.nifti1.load(result.outputs.output_image)
         atlas = atlas_img.get_fdata()
-        atlas[atlas < 1e-6] = 0  # Threshold to avoid numerical issues.
+        atlas[atlas < 1e-6] = 0  # Threshold to avoid numerical issues
 
         out_atlas_img = new_img_like(merge.fixed_img, atlas, copy_header=True)
         out_atlas_img.header[

@@ -16,19 +16,19 @@ jobs:
     container: fmri.science/halfpipe:latest
     steps:
       - name: Install dependencies
-        shell: bash
+        shell: sudo bash {0}
         run: |
-          mamba install -y git zip
-          git --version
+          apt-get --yes update
+          apt-get --yes install libreoffice git zip
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build atlases
         id: build_atlases
         shell: bash
         run: |
-          cat > ${FREESURFER_HOME}/license.txt <<EOF
+          cat > "${FREESURFER_HOME}/license.txt" <<EOF
           halfpipe@fmri.science
           73053
            *C8FMo8yrzcZA
@@ -40,14 +40,14 @@ jobs:
 
           atlas_dir=/tmp/atlases
           mkdir -p ${atlas_dir}
-          cd ${atlas_dir}
+          pushd ${atlas_dir} || exit
 
           halfpipe-atlases-build
           
           zip_path=${atlas_dir}.zip
           zip ${zip_path} *
 
-          echo "zip_path=${zip_path}" >> ${GITHUB_OUTPUT}
+          echo "zip_path=${zip_path}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload atlases
         uses: actions/upload-artifact@v3

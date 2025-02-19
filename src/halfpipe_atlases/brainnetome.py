@@ -24,7 +24,7 @@ brainnetome_zip_url = (
 extra_resources = dict()
 extra_resources[brainnetome_zip] = brainnetome_zip_url
 
-hr.online_resources.update(extra_resources)
+hr.online_resources.update(extra_resources)  # type: ignore[arg-type]
 
 
 def from_brainnetome(merge: AtlasMerge, prefix: str | None = "Brainnetome") -> None:
