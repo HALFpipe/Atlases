@@ -23,6 +23,7 @@ jobs:
             --detach \
             --rm \
             --name="build" \
+            --volume="/home/runner:/home/runner" \
             --volume="$(pwd):/halfpipe" \
             --workdir="/halfpipe" \
             --entrypoint="tail" \
@@ -50,12 +51,12 @@ jobs:
           pip install --verbose .
 
           atlas_dir=atlases
-          mkdir -p ${atlas_dir}
+          mkdir ${atlas_dir}
           pushd ${atlas_dir} || exit
 
           halfpipe-atlases-build
           
-          zip_path=${atlas_dir}.zip
+          zip_path=atlases.zip
           zip ${zip_path} *
 
           echo "zip_path=${zip_path}" >> "${GITHUB_OUTPUT}"
