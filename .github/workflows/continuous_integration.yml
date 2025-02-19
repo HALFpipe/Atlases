@@ -13,19 +13,31 @@ on:
 jobs:
   test:
     runs-on: self-hosted
-    container: fmri.science/halfpipe:latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup container
+        run: |
+          docker run \
+            --detach \
+            --rm \
+            --name="build" \
+            --volume="$(pwd):/halfpipe" \
+            --workdir="/halfpipe" \
+            --entrypoint="tail" \
+            ${{ secrets.REGISTRY }}/halfpipe \
+            --follow /dev/null
+
       - name: Install dependencies
+        shell: docker exec build bash -x -e {0}
         run: |
           apt-get --yes update
           apt-get --yes install libreoffice git zip
 
-      - name: Checkout
-        uses: actions/checkout@v4
-
       - name: Build atlases
         id: build_atlases
-        shell: bash
+        shell: docker exec build bash -x -e {0}
         run: |
           cat > "${FREESURFER_HOME}/license.txt" <<EOF
           halfpipe@fmri.science
@@ -37,7 +49,7 @@ jobs:
 
           pip install --verbose .
 
-          atlas_dir=/tmp/atlases
+          atlas_dir=atlases
           mkdir -p ${atlas_dir}
           pushd ${atlas_dir} || exit
 
@@ -47,6 +59,10 @@ jobs:
           zip ${zip_path} *
 
           echo "zip_path=${zip_path}" >> "${GITHUB_OUTPUT}"
+
+      - name: Stop container
+        run: |
+          docker kill build
 
       - name: Upload atlases
         uses: actions/upload-artifact@v4
