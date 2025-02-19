@@ -19,7 +19,6 @@ jobs:
 
       - name: Setup container
         run: |
-          echo $GITHUB_OUTPUT
           docker run \
             --detach \
             --rm \
@@ -38,30 +37,26 @@ jobs:
           apt-get --yes install libreoffice git zip
 
       - name: Build atlases
-        id: build_atlases
         shell: docker exec build bash -x -e {0}
         run: |
-          echo $GITHUB_OUTPUT
           cat > "${FREESURFER_HOME}/license.txt" <<EOF
           halfpipe@fmri.science
           73053
-           *C8FMo8yrzcZA
-           FSCA7.lDgNIow
-           e1n3o06osRFD3qtBRgsTy9f9bQHGOpY/riIUrHoEx5c=
+          *C8FMo8yrzcZA
+          FSCA7.lDgNIow
+          e1n3o06osRFD3qtBRgsTy9f9bQHGOpY/riIUrHoEx5c=
           EOF
 
           pip install --verbose .
 
-          atlas_dir=atlases
-          mkdir ${atlas_dir}
-          pushd ${atlas_dir} || exit
+          atlas_path=$(mktemp -d)
+          pushd "${atlas_path}" || exit
 
           halfpipe-atlases-build
-          
-          zip_path=atlases.zip
-          zip ${zip_path} *
 
-          echo "zip_path=${zip_path}" >> "${GITHUB_OUTPUT}"
+          popd || exit
+
+          zip -9 --junk-paths --recurse-paths atlases.zip "${atlas_path}"
 
       - name: Stop container
         run: |
@@ -70,11 +65,10 @@ jobs:
       - name: Upload atlases
         uses: actions/upload-artifact@v4
         with:
-          name: atlases.zip
-          path: ${{ steps.build_atlases.outputs.zip_path }}
+          path: atlases.zip
 
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ steps.build_atlases.outputs.zip_path }}
+          files: atlases.zip
