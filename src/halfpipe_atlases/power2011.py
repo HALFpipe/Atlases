@@ -5,6 +5,8 @@
 from pathlib import Path
 from shutil import rmtree
 from tempfile import mkdtemp
+import warnings
+from zipfile import ZipFile
 
 import nibabel as nib
 import numpy as np
@@ -30,13 +32,11 @@ capabilities, an element of brain organization."
 
 """
 
-power2011_table = "NIHMS326477-supplement-02.xls"
-power2011_table_url = (
-    "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3222858/bin/" + power2011_table
-)
+power2011_zip = "2011_Neuron_data_updated.zip"
+power2011_zip_url = f"https://www.dropbox.com/s/4dr9uby03o6gjln/{power2011_zip}?dl=1"
 
 extra_resources = dict()
-extra_resources[power2011_table] = power2011_table_url
+extra_resources[power2011_zip] = power2011_zip_url
 
 hr.online_resources.update(extra_resources)
 
@@ -46,9 +46,19 @@ def from_power2011(merge: AtlasMerge, prefix: str | None = "Power2011") -> None:
 
     # read coordinates
 
-    atlas_table_file = str(hr.get(power2011_table))
-    atlas_df = pd.read_excel(atlas_table_file, skiprows=1, index_col=0)
-    coordinates_mni = atlas_df[["X", "Y", "Z"]].to_numpy()
+    power2011_zip_file = hr.get(power2011_zip)
+    with ZipFile(power2011_zip_file, "r") as zip_file_handle, zip_file_handle.open(
+        "2011 Neuron data/Neuron_consensus_264.xlsx", "r"
+    ) as atlas_table_file_handle, warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
+        atlas_df = pd.read_excel(
+            atlas_table_file_handle,
+            engine="openpyxl",
+            skiprows=1,
+            index_col=0,
+            usecols=[0, 6, 7, 8],
+        )
+    coordinates_mni = atlas_df.to_numpy()
 
     r0 = 10 / 2  # mm
     r1 = 20 / 2  # mm
@@ -56,7 +66,7 @@ def from_power2011(merge: AtlasMerge, prefix: str | None = "Power2011") -> None:
     template = "MNI152NLin6Asym"
 
     fixed_path = api.get(template, resolution=1, suffix="mask", desc="brain")
-    fixed_img = nib.load(fixed_path)
+    fixed_img = nib.nifti1.load(fixed_path)
     fixed_mask = fixed_img.get_fdata() > 0
 
     meshgrid_fixed = tuple(
@@ -109,3 +119,7 @@ def build():
     from_power2011(merge, prefix=None)
 
     merge.write("atlas-Power2011_dseg")
+
+
+if __name__ == "__main__":
+    build()
