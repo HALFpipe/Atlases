@@ -75,11 +75,11 @@ class AtlasMerge:
             np.sum(self.masks.to_list(), axis=0, dtype=np.uint16) <= 1
         )  # double check ties
 
-        atlas = np.sum(
+        atlas: npt.NDArray[np.uint16] = np.sum(
             list(map(mask_to_atlas, self.masks.items())),  # type: ignore[arg-type]
             axis=0,
             dtype=np.uint16,
-        )
+        )  # type: ignore[assignment]
         return atlas
 
     def merge_masks_with_overlap(self) -> npt.NDArray[np.uint16]:
@@ -125,7 +125,9 @@ class AtlasMerge:
             mask = self.masks.loc[value]
             label = self.labels.loc[value]
 
-            components, n_components = scipy.ndimage.label(mask, structure=np.ones((3, 3, 3)))
+            components, n_components = scipy.ndimage.label(
+                mask, structure=np.ones((3, 3, 3))
+            )
 
             if n_components == 1:
                 accumulate(mask, label)
@@ -177,6 +179,13 @@ class AtlasMerge:
 
             mask = np.zeros(self.fixed_img.shape, dtype=bool)
             mask[in_atlas == value] = True
+
+            if not mask.any():
+                warn(
+                    f"Label {label:s} at index {value:d} has no voxels in the resampled atlas. "
+                    "Skipping."
+                )
+                continue
 
             self.masks.loc[new_value] = mask
 

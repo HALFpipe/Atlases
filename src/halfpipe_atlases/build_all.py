@@ -18,6 +18,7 @@ def build() -> None:
 
     config.enable_debug_mode()
 
+    from .aal import build as aal_build
     from .brainnetome import build as brainnetome_build
     from .brainnetome_combined import build as brainnetome_combined_build
     from .buckner2011 import build as buckner2011_build
@@ -33,6 +34,7 @@ def build() -> None:
     from .ukbiobank import build as ukbiobank_build
 
     build_fns = [
+        aal_build,
         brainnetome_build,
         brainnetome_combined_build,
         buckner2011_build,
