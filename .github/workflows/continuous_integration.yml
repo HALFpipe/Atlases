@@ -27,12 +27,13 @@ jobs:
             --volume="$(pwd):/halfpipe" \
             --workdir="/halfpipe" \
             --entrypoint="tail" \
-            ${{ secrets.REGISTRY }}/halfpipe \
+            ${{ secrets.REGISTRY }}/halfpipe:latest \
             --follow /dev/null
 
       - name: Install dependencies
         shell: docker exec build bash -x -e {0}
         run: |
+          rm --force /etc/apt/sources.list.d/zeehio.list
           apt-get --yes update
           apt-get --yes install libreoffice git zip
 
