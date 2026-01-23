@@ -41,6 +41,9 @@ jobs:
       - name: Build atlases
         shell: docker exec build bash -x -e {0}
         run: |
+          eval "$(micromamba shell hook --shell bash)"
+          micromamba activate fmriprep
+
           cat > "${FREESURFER_HOME}/license.txt" <<EOF
           halfpipe@fmri.science
           73053
