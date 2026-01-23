@@ -33,6 +33,7 @@ jobs:
       - name: Install dependencies
         shell: docker exec build bash -x -e {0}
         run: |
+          export LD_LIBRARY_PATH=""
           rm --force /etc/apt/sources.list.d/zeehio.list
           apt-get --yes update
           apt-get --yes install libreoffice git zip
