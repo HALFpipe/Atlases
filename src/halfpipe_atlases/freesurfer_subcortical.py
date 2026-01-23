@@ -17,8 +17,8 @@ tmp = Path(mkdtemp())
 def from_freesurfer_subcortical(
     merge: AtlasMerge, prefix: str | None = "FreeSurfer"
 ) -> None:
-    rb_date = "2016-05-10"
-    rb_gca = freesurfer_home / "average" / f"RB_all_{rb_date}.vc700.gca"
+    rb_date = "2020-01-02"
+    rb_gca = freesurfer_home / "average" / f"RB_all_{rb_date}.gca"
 
     atlas_path = tmp / "labels.nii"
     check_call(["mri_convert", rb_gca, "-nth", "1", atlas_path])
