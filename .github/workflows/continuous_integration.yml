@@ -52,12 +52,10 @@ jobs:
           e1n3o06osRFD3qtBRgsTy9f9bQHGOpY/riIUrHoEx5c=
           EOF
 
-          pip install --verbose .
-
           atlas_path=$(mktemp -d)
           pushd "${atlas_path}" || exit
 
-          halfpipe-atlases-build
+          env PYTHONPATH="src" python -m halfpipe_atlases.build_all
 
           popd || exit
 
