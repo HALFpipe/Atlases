@@ -44,6 +44,8 @@ jobs:
           eval "$(micromamba shell hook --shell bash)"
           micromamba activate fmriprep
 
+          micromamba install --yes python-docx xlrd
+
           cat > "${FREESURFER_HOME}/license.txt" <<EOF
           halfpipe@fmri.science
           73053
@@ -52,12 +54,10 @@ jobs:
           e1n3o06osRFD3qtBRgsTy9f9bQHGOpY/riIUrHoEx5c=
           EOF
 
-          pip install --verbose .
-
           atlas_path=$(mktemp -d)
           pushd "${atlas_path}" || exit
 
-          halfpipe-atlases-build
+          env PYTHONPATH="/halfpipe/src" python -m halfpipe_atlases.build_all
 
           popd || exit
 
